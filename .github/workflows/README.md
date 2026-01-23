@@ -5,18 +5,22 @@
 ## Workflows
 
 ### 1. PR Checks (`pr-checks.yml`)
+
 Автоматично запускається для кожного Pull Request до `main` гілки.
 
 **Перевірки:**
+
 - ✅ Prettier formatting check
 - ✅ ESLint code quality
 - ✅ Unit tests
 - ✅ Build project
 
 ### 2. Main Branch Checks & Deploy (`main-checks-and-deploy.yml`)
+
 Запускається при push в `main` гілку або вручну.
 
 **Перевірки:**
+
 - ✅ Prettier formatting check
 - ✅ ESLint code quality
 - ✅ Unit tests
@@ -31,15 +35,18 @@
 2. Додайте наступні секрети:
 
 ### `VERCEL_TOKEN`
+
 - Отримайте токен на https://vercel.com/account/tokens
 - Створіть новий токен з назвою "GitHub Actions"
 - Додайте його як секрет `VERCEL_TOKEN`
 
 ### `VERCEL_ORG_ID` (опціонально)
+
 - Знайдіть в `.vercel/project.json` після першого деплою
 - Або в налаштуваннях проекту на Vercel
 
 ### `VERCEL_PROJECT_ID` (опціонально)
+
 - Знайдіть в `.vercel/project.json` після першого деплою
 - Або в налаштуваннях проекту на Vercel
 
