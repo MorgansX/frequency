@@ -15,6 +15,10 @@ const config = {
   moduleNameMapper: {
     // Handle module aliases (if you're using them in tsconfig.json)
     '^@/(.*)$': '<rootDir>/src/$1',
+    // Mock heroui components
+    '^@heroui/react$': '<rootDir>/__mocks__/@heroui/react.tsx',
+    // Mock gravity-ui icons
+    '^@gravity-ui/icons$': '<rootDir>/__mocks__/@gravity-ui/icons.tsx',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   collectCoverageFrom: [
@@ -23,6 +27,7 @@ const config = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/__tests__/**',
   ],
+  transformIgnorePatterns: ['node_modules/(?!(@heroui|@gravity-ui)/)'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

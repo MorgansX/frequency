@@ -1,32 +1,38 @@
 import { render, screen } from '@testing-library/react';
-import Home from '../page';
+import { AudioPlayer } from '@/components/Player';
 
-describe('Home', () => {
-  it('renders the main heading', () => {
-    render(<Home />);
+const mockStations = [
+  {
+    stationuuid: '1',
+    name: 'Test Radio',
+    country: 'Ukraine',
+    language: 'Ukrainian',
+    tags: 'pop,rock',
+    votes: 100,
+    codec: 'MP3',
+    bitrate: 128,
+    url_resolved: 'https://example.com/stream',
+    favicon: '',
+  },
+];
 
-    const heading = screen.getByRole('heading', {
-      name: /to get started, edit the page\.tsx file/i,
-    });
+describe('AudioPlayer', () => {
+  it('renders the station name', () => {
+    render(<AudioPlayer stations={mockStations} />);
 
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText('Test Radio')).toBeInTheDocument();
   });
 
-  it('renders the Deploy Now link', () => {
-    render(<Home />);
+  it('renders the station country', () => {
+    render(<AudioPlayer stations={mockStations} />);
 
-    const deployLink = screen.getByRole('link', { name: /deploy now/i });
-
-    expect(deployLink).toBeInTheDocument();
-    expect(deployLink).toHaveAttribute('target', '_blank');
+    expect(screen.getByText(/Ukraine/)).toBeInTheDocument();
   });
 
-  it('renders the Documentation link', () => {
-    render(<Home />);
+  it('renders play controls', () => {
+    render(<AudioPlayer stations={mockStations} />);
 
-    const docsLink = screen.getByRole('link', { name: /documentation/i });
-
-    expect(docsLink).toBeInTheDocument();
-    expect(docsLink).toHaveAttribute('href');
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThanOrEqual(3);
   });
 });
