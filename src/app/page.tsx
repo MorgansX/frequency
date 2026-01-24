@@ -10,7 +10,7 @@ export default async function Home() {
   });
 
   return (
-    <main className="p-8 max-w-4xl mx-auto">
+    <main className="flex flex-col justify-end items-center w-screen h-screen pb-8">
       <AudioPlayer stations={stations} />
     </main>
   );
