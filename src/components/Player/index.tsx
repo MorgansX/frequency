@@ -12,11 +12,19 @@ export const AudioPlayer = ({ stations }: IPlayer) => {
     stations,
   });
 
-  const { handlePlay, hanldePrevStation, handleNextStation } = handlers;
+  const { handlePlay, hanldePrevStation, handleNextStation, handleError } =
+    handlers;
 
   const { currentStation } = stationState;
 
-  const { isPlaying, setIsPlaying, setIsLoading, isLoading } = playingState;
+  const { isPlaying, setIsPlaying, isLoading } = playingState;
+
+  // Debug: log station data on mount
+  console.log('Current station:', currentStation);
+
+  if (!currentStation) {
+    return <div>No stations available</div>;
+  }
 
   return (
     <Card className="w-full max-w-md shadow-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 border border-zinc-700">
@@ -43,12 +51,9 @@ export const AudioPlayer = ({ stations }: IPlayer) => {
 
       <audio
         ref={audioRef}
-        src={currentStation.url_resolved}
+        src={currentStation.url_resolved || currentStation.url || ''}
         onEnded={() => setIsPlaying(false)}
-        onError={() => {
-          setIsPlaying(false);
-          setIsLoading(false);
-        }}
+        onError={handleError}
       />
     </Card>
   );

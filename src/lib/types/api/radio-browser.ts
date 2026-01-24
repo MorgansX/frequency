@@ -19,7 +19,8 @@ export const radioBrowserApi = {
     if (params.reverse) searchParams.append('reverse', 'true');
 
     const response = await fetch(
-      `${BASE_URL}/json/stations/search?${searchParams}`
+      `${BASE_URL}/json/stations/search?${searchParams}`,
+      { cache: 'no-store' }
     );
 
     if (!response.ok) {
