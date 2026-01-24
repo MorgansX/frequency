@@ -1,23 +1,19 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { Station } from '@/lib/types/radio.types';
+import { radioBrowserApi } from '@/lib/types/api/radio-browser';
 import { IPlayer } from './types';
 
 const STATIONS_PER_PAGE = 20;
-const BASE_URL = 'https://de1.api.radio-browser.info';
 
-const fetchMoreStations = async (offset: number): Promise<Station[]> => {
-  const params = new URLSearchParams({
+const fetchMoreStations = (offset: number): Promise<Station[]> => {
+  return radioBrowserApi.searchStations({
     country: 'Ukraine',
     order: 'votes',
     reverse: 'true',
     limit: String(STATIONS_PER_PAGE),
     offset: String(offset),
   });
-
-  const response = await fetch(`${BASE_URL}/json/stations/search?${params}`);
-  if (!response.ok) throw new Error('Failed to fetch stations');
-  return response.json();
 };
 
 export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
