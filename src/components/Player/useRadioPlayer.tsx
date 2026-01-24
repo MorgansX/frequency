@@ -47,6 +47,13 @@ export const useRadioPlayer = ({ stations }: IPlayer) => {
     setCurrentStationIndex((prev) => prev - 1);
   };
 
+  const handleError = () => {
+    setIsPlaying(false);
+    setIsLoading(false);
+    // Auto-skip to next station on error
+    handleNextStation();
+  };
+
   useEffect(() => {
     if (!audioElement) return;
 
@@ -90,6 +97,7 @@ export const useRadioPlayer = ({ stations }: IPlayer) => {
       hanldePrevStation,
       handlePlay,
       handleNextStation,
+      handleError,
     },
   };
 };
