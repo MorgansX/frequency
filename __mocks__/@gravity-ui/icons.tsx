@@ -1,0 +1,21 @@
+import React from 'react';
+
+export const CirclePlay = (props: Record<string, unknown>) => (
+  <svg data-testid="circle-play" {...props} />
+);
+
+export const CirclePause = (props: Record<string, unknown>) => (
+  <svg data-testid="circle-pause" {...props} />
+);
+
+export const CircleChevronLeft = (props: Record<string, unknown>) => (
+  <svg data-testid="circle-chevron-left" {...props} />
+);
+
+export const CircleChevronRight = (props: Record<string, unknown>) => (
+  <svg data-testid="circle-chevron-right" {...props} />
+);
+
+export const CircleFill = (props: Record<string, unknown>) => (
+  <svg data-testid="circle-fill" {...props} />
+);
