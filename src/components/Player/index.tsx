@@ -19,9 +19,6 @@ export const AudioPlayer = ({ stations }: IPlayer) => {
 
   const { isPlaying, setIsPlaying, isLoading } = playingState;
 
-  // Debug: log station data on mount
-  console.log('Current station:', currentStation);
-
   if (!currentStation) {
     return <div>No stations available</div>;
   }
@@ -51,7 +48,7 @@ export const AudioPlayer = ({ stations }: IPlayer) => {
 
       <audio
         ref={audioRef}
-        src={currentStation.url_resolved || currentStation.url || ''}
+        src={currentStation.url_resolved || currentStation.url}
         onEnded={() => setIsPlaying(false)}
         onError={handleError}
       />

@@ -1,7 +1,23 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import toast from 'react-hot-toast';
+import { Station } from '@/lib/types/radio.types';
+import { radioBrowserApi } from '@/lib/types/api/radio-browser';
 import { IPlayer } from './types';
 
-export const useRadioPlayer = ({ stations }: IPlayer) => {
+const STATIONS_PER_PAGE = 20;
+
+const fetchMoreStations = (offset: number): Promise<Station[]> => {
+  return radioBrowserApi.searchStations({
+    country: 'Ukraine',
+    order: 'votes',
+    reverse: 'true',
+    limit: String(STATIONS_PER_PAGE),
+    offset: String(offset),
+  });
+};
+
+export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
+  const [stations, setStations] = useState<Station[]>(initialStations);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
   );
@@ -10,7 +26,9 @@ export const useRadioPlayer = ({ stations }: IPlayer) => {
   }, []);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
+  const offsetRef = useRef(STATIONS_PER_PAGE);
 
   const totalStations = stations.length;
 
@@ -30,15 +48,46 @@ export const useRadioPlayer = ({ stations }: IPlayer) => {
       }
     } catch (error) {
       console.error('Error playing audio:', error);
-      //TODO: error handler with react hot toast
+      toast.error('Помилка відтворення');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleNextStation = () => {
-    setCurrentStationIndex((prev) => (prev + 1) % totalStations);
-  };
+  const loadMoreStations = useCallback(async () => {
+    if (isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const newStations = await fetchMoreStations(offsetRef.current);
+      if (newStations.length > 0) {
+        setStations((prev) => [...prev, ...newStations]);
+        offsetRef.current += STATIONS_PER_PAGE;
+      }
+    } catch (error) {
+      console.error('Error loading more stations:', error);
+      toast.error('Не вдалося завантажити більше станцій');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore]);
+
+  const handleNextStation = useCallback(() => {
+    const nextIndex = currentStationIndex + 1;
+
+    if (nextIndex >= totalStations - 3 && !isLoadingMore) {
+      loadMoreStations();
+    }
+
+    if (nextIndex >= totalStations) {
+      if (!isLoadingMore) {
+        loadMoreStations();
+      }
+      return;
+    }
+
+    setCurrentStationIndex(nextIndex);
+  }, [currentStationIndex, totalStations, isLoadingMore, loadMoreStations]);
 
   const hanldePrevStation = () => {
     if (currentStationIndex === 0) {
@@ -50,8 +99,10 @@ export const useRadioPlayer = ({ stations }: IPlayer) => {
   const handleError = () => {
     setIsPlaying(false);
     setIsLoading(false);
-    // Auto-skip to next station on error
-    handleNextStation();
+    toast.error(
+      `${currentStation?.name || 'Станція'} недоступна, перемикаю...`
+    );
+    setTimeout(() => handleNextStation(), 2000);
   };
 
   useEffect(() => {
