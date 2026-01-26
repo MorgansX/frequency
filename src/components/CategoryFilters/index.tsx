@@ -17,10 +17,23 @@ import { CategoriesFooter } from './CategoriesFooter';
 import { useCategoriesFilter } from './useCtagoriesFilter';
 
 export const CategoryFilters = ({ categories }: { categories: string[] }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { selectedCategories, selectedCount, toggleCategory, clearAll, applyFilters } =
-    useCategoriesFilter();
+  const {
+    selectedCategories,
+    selectedCount,
+    toggleCategory,
+    clearAll,
+    applyFilters,
+    resetFiltersToUrlState,
+  } = useCategoriesFilter();
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      resetFiltersToUrlState();
+    }
+    onOpenChange();
+  };
 
   return (
     <>
@@ -32,7 +45,7 @@ export const CategoryFilters = ({ categories }: { categories: string[] }) => {
 
       <Modal
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        onOpenChange={handleOpenChange}
         size="lg"
         placement="center"
         classNames={MODAL_STYLES}

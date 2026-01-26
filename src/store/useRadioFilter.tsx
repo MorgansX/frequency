@@ -10,6 +10,7 @@ type Actions = {
   clearFilters: () => void;
   removeFilter: (filterItems: string) => void;
   applySelectedFilters: () => void;
+  resetFiltersToUrlState: () => void;
 };
 
 export const useRadioFilter = create<State & Actions>((set) => ({
@@ -25,5 +26,9 @@ export const useRadioFilter = create<State & Actions>((set) => ({
   applySelectedFilters: () =>
     set((state) => ({
       applyedFilters: state.filters,
+    })),
+  resetFiltersToUrlState: () =>
+    set((state) => ({
+      filters: state.applyedFilters,
     })),
 }));
