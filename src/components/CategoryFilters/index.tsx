@@ -1,68 +1,65 @@
 'use client';
 
-import { useState } from 'react';
 import { Funnel } from '@gravity-ui/icons';
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   useDisclosure,
 } from '@heroui/modal';
-import {Button} from '@heroui/react'
+import { Button } from '@heroui/react';
+import { MODAL_STYLES } from './styles';
+import { ItemsCountIndicator } from '../ItemsCountIndicator';
+import { CategoriesHeader } from './CategoriesHeader';
+import { CategoriesButtons } from './CategoriesButtons';
+import { CategoriesFooter } from './CategoriesFooter';
+import { useCategoriesFilter } from './useCtagoriesFilter';
+import { useRouter } from 'next/navigation';
 
-interface CategoryFiltersProps {
-  categories: string[];
-}
-
-export const CategoryFilters = ({ categories }: CategoryFiltersProps) => {
+export const CategoryFilters = ({ categories }: { categories: string[] }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const router = useRouter();
 
-  const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
+  const { selectedCategories, selectedCount, toggleCategory, clearAll } =
+    useCategoriesFilter({router});
 
   return (
     <>
-      <Button onPress={onOpen} size="md" radius="md" className="!p-4">
+      <Button onPress={onOpen} size="md" className="!p-4 relative rounded-xl">
         <Funnel />
         <span>Filters</span>
+        <ItemsCountIndicator count={selectedCount} />
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="sm">
+
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="lg"
+        placement="center"
+        classNames={MODAL_STYLES}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Filters</ModalHeader>
+              <CategoriesHeader
+                selectedCount={selectedCount}
+                onClose={onClose}
+              />
               <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit dolor
-                  adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                  officia eiusmod Lorem aliqua enim laboris do dolor eiusmod.
-                </p>
+                <CategoriesButtons
+                  categories={categories}
+                  selectedCategories={selectedCategories}
+                  toggleCategory={toggleCategory}
+                />
               </ModalBody>
+
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
+                <CategoriesFooter
+                  selectedCount={selectedCount}
+                  clearAll={clearAll}
+                  onClose={onClose}
+                />
               </ModalFooter>
             </>
           )}

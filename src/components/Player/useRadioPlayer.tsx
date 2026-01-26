@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Station } from '@/lib/types/radio.types';
 import { radioBrowserApi } from '@/lib/types/api/radio-browser';
@@ -6,13 +7,14 @@ import { IPlayer } from './types';
 
 const STATIONS_PER_PAGE = 20;
 
-const fetchMoreStations = (offset: number): Promise<Station[]> => {
+const fetchStations = (offset: number, tagList?: string): Promise<Station[]> => {
   return radioBrowserApi.searchStations({
     country: 'Ukraine',
     order: 'votes',
     reverse: 'true',
     limit: String(STATIONS_PER_PAGE),
     offset: String(offset),
+    ...(tagList && { tagList }),
   });
 };
 
@@ -29,6 +31,35 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentStationIndex, setCurrentStationIndex] = useState(0);
   const offsetRef = useRef(STATIONS_PER_PAGE);
+
+  const searchParams = useSearchParams();
+  const tagList = searchParams.get('categories') ?? '';
+
+  Fetch stations when filters change
+  useEffect(() => {
+    const fetchFilteredStations = async () => {
+      setIsLoading(true);
+      try {
+        const newStations = await fetchStations(0, tagList || undefined);
+        setStations(newStations);
+        setCurrentStationIndex(0);
+        offsetRef.current = STATIONS_PER_PAGE;
+      } catch (error) {
+        console.error('Error fetching stations:', error);
+        toast.error('Не вдалося завантажити станції');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (tagList) {
+      fetchFilteredStations();
+    } else {
+      setStations(initialStations);
+      setCurrentStationIndex(0);
+      offsetRef.current = STATIONS_PER_PAGE;
+    }
+  }, [tagList, initialStations]);
 
   const totalStations = stations.length;
 
@@ -59,7 +90,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
 
     setIsLoadingMore(true);
     try {
-      const newStations = await fetchMoreStations(offsetRef.current);
+      const newStations = await fetchStations(offsetRef.current, tagList || undefined);
       if (newStations.length > 0) {
         setStations((prev) => [...prev, ...newStations]);
         offsetRef.current += STATIONS_PER_PAGE;
@@ -70,7 +101,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore]);
+  }, [isLoadingMore, tagList]);
 
   const handleNextStation = useCallback(() => {
     const nextIndex = currentStationIndex + 1;
@@ -108,7 +139,6 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   useEffect(() => {
     if (!audioElement) return;
 
-    // Load new source when station changes
     audioElement.load();
 
     const playNewStation = async () => {
@@ -128,7 +158,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
 
     playNewStation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStationIndex, audioElement]);
+  }, [currentStationIndex, audioElement, stations]);
 
   return {
     audioRef,

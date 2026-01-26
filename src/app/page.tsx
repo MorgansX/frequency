@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { CategoryFilters } from '@/components/CategoryFilters';
 import { AudioPlayer } from '@/components/Player';
 import { radioBrowserApi } from '@/lib/types/api/radio-browser';
@@ -17,10 +18,12 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col justify-end items-center w-screen h-screen pb-2">
-      <AudioPlayer stations={stations} />
-      <div aria-label="additional-buttons" className="flex m-2">
-        <CategoryFilters categories={categories} />
-      </div>
+      <Suspense>
+        <AudioPlayer stations={stations} />
+        <div aria-label="additional-buttons" className="flex m-2">
+          <CategoryFilters categories={categories} />
+        </div>
+      </Suspense>
     </main>
   );
 }
