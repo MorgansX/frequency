@@ -45,12 +45,12 @@ export const PlayerStationInfo = ({
         {currentStation.country}{' '}
         {currentStation.language && `• ${currentStation.language}`}
       </p>
-      <div className="flex gap-2 flex-wrap mt-1">
+      <div className="flex gap-2 flex-wrap">
         <Chip
           size="sm"
           color="success"
           variant="primary"
-          className="!px-2 !py-1 gap-1"
+          className="px-2 py-1 gap-1"
         >
           {currentStation.codec} {currentStation.bitrate}kbps
         </Chip>
@@ -58,7 +58,7 @@ export const PlayerStationInfo = ({
           size="sm"
           color="success"
           variant="primary"
-          className="!px-2 !py-1 gap-1"
+          className="px-2 py-1 gap-1"
         >
           {currentStation.votes} votes
         </Chip>

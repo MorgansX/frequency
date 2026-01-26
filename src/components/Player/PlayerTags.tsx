@@ -1,7 +1,7 @@
 import { Chip } from '@heroui/react';
 
 export const PlayerTags = ({ tags }: { tags: string }) => (
-  <div className="pt-8 pb-4 px-4">
+  <div className="pt-2">
     {tags && (
       <div className="flex gap-1 flex-wrap">
         {tags
@@ -13,7 +13,7 @@ export const PlayerTags = ({ tags }: { tags: string }) => (
               size="sm"
               color="warning"
               variant="soft"
-              className="!px-2 !py-1 gap-1"
+              className="px-2 py-1 gap-1"
             >
               {tag.trim()}
             </Chip>

@@ -21,7 +21,7 @@ export const PlayerButtons = ({
   isPlaying,
   handleNextStation,
 }: PlayerButtonsProps) => (
-  <CardFooter className="justify-center gap-4 py-4">
+  <CardFooter className="justify-center gap-4 ">
     <Button
       isIconOnly
       size="lg"
