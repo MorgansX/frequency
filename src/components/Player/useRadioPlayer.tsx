@@ -35,7 +35,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   const searchParams = useSearchParams();
   const tagList = searchParams.get('categories') ?? '';
 
-  Fetch stations when filters change
+  // Fetch stations when filters change
   useEffect(() => {
     const fetchFilteredStations = async () => {
       setIsLoading(true);
