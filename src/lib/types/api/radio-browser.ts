@@ -13,7 +13,8 @@ export const radioBrowserApi = {
     if (params.language)
       searchParams.append('language', params.language.toString());
     if (params.tag) searchParams.append('tag', params.tag.toString());
-    if (params.tagList) searchParams.append('tagList', params.tagList.toString());
+    if (params.tagList)
+      searchParams.append('tagList', params.tagList.toString());
     if (params.limit) searchParams.append('limit', params.limit.toString());
     if (params.offset) searchParams.append('offset', params.offset.toString());
     if (params.order) searchParams.append('order', params.order.toString());

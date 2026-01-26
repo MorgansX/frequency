@@ -15,14 +15,12 @@ import { CategoriesHeader } from './CategoriesHeader';
 import { CategoriesButtons } from './CategoriesButtons';
 import { CategoriesFooter } from './CategoriesFooter';
 import { useCategoriesFilter } from './useCtagoriesFilter';
-import { useRouter } from 'next/navigation';
 
 export const CategoryFilters = ({ categories }: { categories: string[] }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const router = useRouter();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  const { selectedCategories, selectedCount, toggleCategory, clearAll } =
-    useCategoriesFilter({router});
+  const { selectedCategories, selectedCount, toggleCategory, clearAll, applyFilters } =
+    useCategoriesFilter();
 
   return (
     <>
@@ -59,6 +57,7 @@ export const CategoryFilters = ({ categories }: { categories: string[] }) => {
                   selectedCount={selectedCount}
                   clearAll={clearAll}
                   onClose={onClose}
+                  applyFilters={applyFilters}
                 />
               </ModalFooter>
             </>

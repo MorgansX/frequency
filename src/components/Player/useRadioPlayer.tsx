@@ -7,7 +7,10 @@ import { IPlayer } from './types';
 
 const STATIONS_PER_PAGE = 20;
 
-const fetchStations = (offset: number, tagList?: string): Promise<Station[]> => {
+const fetchStations = (
+  offset: number,
+  tagList?: string
+): Promise<Station[]> => {
   return radioBrowserApi.searchStations({
     country: 'Ukraine',
     order: 'votes',
@@ -90,7 +93,10 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
 
     setIsLoadingMore(true);
     try {
-      const newStations = await fetchStations(offsetRef.current, tagList || undefined);
+      const newStations = await fetchStations(
+        offsetRef.current,
+        tagList || undefined
+      );
       if (newStations.length > 0) {
         setStations((prev) => [...prev, ...newStations]);
         offsetRef.current += STATIONS_PER_PAGE;

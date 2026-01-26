@@ -4,13 +4,20 @@ interface CategoriesFooterProps {
   selectedCount: number;
   clearAll: () => void;
   onClose: () => void;
+  applyFilters: () => void;
 }
 
 export const CategoriesFooter = ({
   selectedCount,
   clearAll,
+  applyFilters,
   onClose,
-}: CategoriesFooterProps) => (
+}: CategoriesFooterProps) => {
+  const handleApplyFilters = () => {
+    applyFilters();
+    onClose();
+  }
+  return(
   <div className="flex items-center justify-between w-full p-5 border-t border-zinc-700/50 bg-zinc-800/30">
     <Button
       variant="ghost"
@@ -30,11 +37,11 @@ export const CategoriesFooter = ({
       </Button>
       <Button
         variant="primary"
-        onPress={onClose}
+        onPress={handleApplyFilters}
         className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white shadow-lg shadow-purple-500/25"
       >
         Apply filters
       </Button>
     </div>
   </div>
-);
+)};
