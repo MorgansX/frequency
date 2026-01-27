@@ -149,7 +149,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   const handleError = () => {
     setIsPlaying(false);
     setIsLoading(false);
-    toast.error(
+    console.log(
       `${currentStation?.name || 'Станція'} недоступна, перемикаю...`
     );
     setTimeout(() => handleNextStation(), 500);
