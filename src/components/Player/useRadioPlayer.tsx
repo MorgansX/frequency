@@ -152,7 +152,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
     toast.error(
       `${currentStation?.name || 'Станція'} недоступна, перемикаю...`
     );
-    setTimeout(() => handleNextStation(), 2000);
+    setTimeout(() => handleNextStation(), 500);
   };
 
   useEffect(() => {
