@@ -29,7 +29,7 @@ export const PlayerStationInfo = ({
         {currentStation.name?.charAt(0) || 'FM'}
       </span>
     </div>
-    <div className="flex flex-col gap-1 flex-1">
+    <div className="flex flex-col gap-1 flex-1 min-w-0 overflow-hidden">
       <div className="flex items-center gap-2">
         <h2 className="text-xl font-bold text-zinc-100 truncate max-w-[300px]">
           {currentStation.name}
@@ -41,7 +41,7 @@ export const PlayerStationInfo = ({
           </Chip>
         )}
       </div>
-      <p className="text-sm text-zinc-400">
+      <p className="text-sm text-zinc-400 truncate">
         {currentStation.country}{' '}
         {currentStation.language && `• ${currentStation.language}`}
       </p>
