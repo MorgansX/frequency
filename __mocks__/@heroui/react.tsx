@@ -2,9 +2,17 @@ import React from 'react';
 
 export const Button = ({
   children,
+  onPress,
+  isDisabled,
   ...props
-}: React.PropsWithChildren<Record<string, unknown>>) => (
-  <button {...props}>{children}</button>
+}: React.PropsWithChildren<{
+  onPress?: () => void;
+  isDisabled?: boolean;
+  [key: string]: unknown;
+}>) => (
+  <button onClick={onPress} disabled={isDisabled} {...props}>
+    {children}
+  </button>
 );
 
 export const Card = ({

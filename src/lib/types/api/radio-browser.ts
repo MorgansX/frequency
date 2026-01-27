@@ -13,6 +13,8 @@ export const radioBrowserApi = {
     if (params.language)
       searchParams.append('language', params.language.toString());
     if (params.tag) searchParams.append('tag', params.tag.toString());
+    if (params.tagList)
+      searchParams.append('tagList', params.tagList.toString());
     if (params.limit) searchParams.append('limit', params.limit.toString());
     if (params.offset) searchParams.append('offset', params.offset.toString());
     if (params.order) searchParams.append('order', params.order.toString());
@@ -28,6 +30,32 @@ export const radioBrowserApi = {
     }
 
     return response.json();
+  },
+
+  searchStationsByTags: async (
+    tags: string[],
+    params: Omit<SearchParams, 'tag' | 'tagList'>
+  ): Promise<Station[]> => {
+    const requests = tags.map((tag) =>
+      radioBrowserApi.searchStations({ ...params, tag })
+    );
+
+    const results = await Promise.allSettled(requests);
+
+    const allStations = results
+      .filter(
+        (result): result is PromiseFulfilledResult<Station[]> =>
+          result.status === 'fulfilled'
+      )
+      .flatMap((result) => result.value);
+
+    const uniqueStations = Array.from(
+      new Map(
+        allStations.map((station) => [station.stationuuid, station])
+      ).values()
+    );
+
+    return uniqueStations.sort((a, b) => b.votes - a.votes);
   },
 
   getStationByUuid: async (uuid: string): Promise<Station | null> => {
@@ -55,5 +83,26 @@ export const radioBrowserApi = {
   getTags: async () => {
     const response = await fetch(`${BASE_URL}/json/tags`);
     return response.json();
+  },
+
+  getTagsByCountry: async (country: string): Promise<string[]> => {
+    const response = await fetch(
+      `${BASE_URL}/json/stations/search?country=${encodeURIComponent(country)}&limit=1000&hidebroken=true`,
+      { cache: 'no-store' }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch tags');
+    }
+
+    const stations: Station[] = await response.json();
+
+    const tags = stations.reduce((acc, station) => {
+      const stationTags = station.tags?.split(',').filter(Boolean) || [];
+      stationTags.forEach((tag) => acc.add(tag.trim()));
+      return acc;
+    }, new Set<string>());
+
+    return Array.from(tags).sort();
   },
 };
