@@ -15,7 +15,7 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="flex flex-col justify-end items-center w-screen h-screen pb-2">
+    <main className="flex-1 flex flex-col justify-end items-center w-screen p-8 pb-2">
       <Suspense>
         <AudioPlayer stations={stations} />
         <div aria-label="additional-buttons" className="flex m-2">

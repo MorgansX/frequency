@@ -25,8 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>{children}</Providers>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col`}
+      >
+        <Providers>
+          <header className="p-8 font-black">
+            <h1 className="text-3xl">Frequency</h1>
+            <span>Radio app</span>
+          </header>
+          {children}
+        </Providers>
       </body>
     </html>
   );
