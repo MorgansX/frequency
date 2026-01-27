@@ -40,6 +40,7 @@ export const useCategoriesFilter = () => {
   const clearAll = () => {
     updateURLQuery([]);
     clearFilters();
+    applySelectedFilters();
   };
 
   const applyFilters = () => {

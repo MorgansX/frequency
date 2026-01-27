@@ -19,3 +19,11 @@ export const CircleChevronRight = (props: Record<string, unknown>) => (
 export const CircleFill = (props: Record<string, unknown>) => (
   <svg data-testid="circle-fill" {...props} />
 );
+
+export const Funnel = (props: Record<string, unknown>) => (
+  <svg data-testid="funnel" {...props} />
+);
+
+export const Xmark = (props: Record<string, unknown>) => (
+  <svg data-testid="xmark" {...props} />
+);

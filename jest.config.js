@@ -17,6 +17,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/src/$1',
     // Mock heroui components
     '^@heroui/react$': '<rootDir>/__mocks__/@heroui/react.tsx',
+    '^@heroui/modal$': '<rootDir>/__mocks__/@heroui/modal.tsx',
     // Mock gravity-ui icons
     '^@gravity-ui/icons$': '<rootDir>/__mocks__/@gravity-ui/icons.tsx',
   },
