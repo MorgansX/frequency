@@ -1,6 +1,6 @@
 export const MODAL_STYLES = {
   wrapper: 'fixed inset-0 z-50 flex items-center justify-center p-4',
-  backdrop: 'fixed inset-0 bg-black/60 backdrop-blur-md',
+  backdrop: 'fixed inset-0 bg-black/70',
   base: 'bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800 border border-zinc-700/50 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden',
   header: 'p-0',
   body: 'p-0',
