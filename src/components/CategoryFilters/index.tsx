@@ -11,10 +11,10 @@ import {
 import { Button } from '@heroui/react';
 import { MODAL_STYLES } from './styles';
 import { ItemsCountIndicator } from '../ItemsCountIndicator';
-import { CategoriesHeader } from './CategoriesHeader';
 import { CategoriesButtons } from './CategoriesButtons';
 import { CategoriesFooter } from './CategoriesFooter';
 import { useCategoriesFilter } from './useCtagoriesFilter';
+import { AppModalHeader } from '../Modal/ModalHeader';
 
 export const CategoryFilters = ({ categories }: { categories: string[] }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -53,10 +53,17 @@ export const CategoryFilters = ({ categories }: { categories: string[] }) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <CategoriesHeader
-                selectedCount={selectedCount}
+              <AppModalHeader
+                ModalIcon={Funnel}
+                modalName="Filters"
                 onClose={onClose}
-              />
+              >
+                <p className="text-sm text-zinc-400">
+                  {selectedCount > 0
+                    ? `${selectedCount} selected`
+                    : 'Select to filter stations'}
+                </p>
+              </AppModalHeader>
               <ModalBody>
                 <CategoriesButtons
                   categories={categories}

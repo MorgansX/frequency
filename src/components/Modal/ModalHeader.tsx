@@ -1,29 +1,28 @@
-import { Funnel, Xmark } from '@gravity-ui/icons';
+import { Xmark } from '@gravity-ui/icons';
 import { ModalHeader } from '@heroui/modal';
 import { Button } from '@heroui/react';
+import React from 'react';
 
-interface CategoriesHeaderProps {
-  selectedCount: number;
+interface ModalHeaderProps extends React.PropsWithChildren {
+  ModalIcon: React.ElementType;
+  modalName: string;
   onClose: () => void;
 }
-
-export const CategoriesHeader = ({
-  selectedCount,
+export const AppModalHeader = ({
+  ModalIcon,
+  modalName,
+  children,
   onClose,
-}: CategoriesHeaderProps) => (
+}: ModalHeaderProps) => (
   <ModalHeader>
     <div className="flex items-center justify-between w-full p-5 border-b border-zinc-700/50">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-          <Funnel className="w-5 h-5 text-white" />
+          <ModalIcon className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-white">Categories</h2>
-          <p className="text-sm text-zinc-400">
-            {selectedCount > 0
-              ? `${selectedCount} selected`
-              : 'Select to filter stations'}
-          </p>
+          <h2 className="text-lg font-semibold text-white">{modalName}</h2>
+          {children}
         </div>
       </div>
       <Button

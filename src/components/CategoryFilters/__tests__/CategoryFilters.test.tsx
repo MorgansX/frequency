@@ -50,6 +50,21 @@ jest.mock('@heroui/modal', () => ({
   }),
 }));
 
+jest.mock('@/components/Modal/ModalHeader', () => ({
+  AppModalHeader: ({
+    modalName,
+    children,
+  }: {
+    modalName: string;
+    children?: React.ReactNode;
+  }) => (
+    <div data-testid="app-modal-header">
+      <span>{modalName}</span>
+      {children}
+    </div>
+  ),
+}));
+
 const mockCategories = ['rock', 'pop', 'jazz', 'electronic', 'classical'];
 
 // Import AFTER mocks are set up
@@ -104,10 +119,10 @@ describe('CategoryFilters', () => {
       });
     });
 
-    it('should render "Categories" header', () => {
+    it('should render modal header', () => {
       render(<CategoryFilters categories={mockCategories} />);
 
-      expect(screen.getByText('Categories')).toBeInTheDocument();
+      expect(screen.getByTestId('app-modal-header')).toBeInTheDocument();
     });
 
     it('should render Apply and Cancel buttons', () => {

@@ -1,76 +1,50 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Station } from '@/lib/types/radio.types';
-import { radioBrowserApi } from '@/lib/types/api/radio-browser';
-import { IPlayer } from './types';
 import { useRadioFilter } from '@/store/useRadioFilter';
-
-const STATIONS_PER_PAGE = 20;
-
-const fetchStations = (offset: number, tags?: string[]): Promise<Station[]> => {
-  const baseParams = {
-    country: 'Ukraine',
-    order: 'votes',
-    reverse: 'true',
-    limit: String(STATIONS_PER_PAGE),
-    offset: String(offset),
-  };
-
-  if (tags && tags.length > 0) {
-    return radioBrowserApi.searchStationsByTags(tags, baseParams);
-  }
-
-  return radioBrowserApi.searchStations(baseParams);
-};
+import { useRadioStations } from '@/store/useRadioStations';
+import { IPlayer } from './types';
 
 export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
-  const [stations, setStations] = useState<Station[]>(initialStations);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
   );
   const audioRef = useCallback((node: HTMLAudioElement | null) => {
     setAudioElement(node);
   }, []);
-  const [isPlaying, setIsPlaying] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [currentStationIndex, setCurrentStationIndex] = useState(0);
-  const offsetRef = useRef(STATIONS_PER_PAGE);
 
   const { applyedFilters } = useRadioFilter();
 
+  const {
+    stations,
+    currentStationIndex,
+    currentStation,
+    totalStations,
+    nextStation,
+    prevStation,
+    fetchStations,
+    resetStations,
+    loadMoreStations,
+    isPlaying,
+    setIsPlaying,
+  } = useRadioStations();
+
+  // Initialize stations on mount
+  useEffect(() => {
+    if (initialStations.length > 0 && stations.length === 0) {
+      resetStations(initialStations);
+    }
+  }, [initialStations, stations.length, resetStations]);
+
   // Fetch stations when filters change
   useEffect(() => {
-    const fetchFilteredStations = async () => {
-      setIsLoading(true);
-      try {
-        const newStations = await fetchStations(0, applyedFilters);
-        setStations(newStations);
-        setCurrentStationIndex(0);
-        offsetRef.current = STATIONS_PER_PAGE;
-        setHasMore(newStations.length >= STATIONS_PER_PAGE);
-      } catch (error) {
-        console.error('Error fetching stations:', error);
-        toast.error('Не вдалося завантажити станції');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (applyedFilters.length) {
-      fetchFilteredStations();
-    } else {
-      setStations(initialStations);
-      setCurrentStationIndex(0);
-      offsetRef.current = STATIONS_PER_PAGE;
-      setHasMore(true);
+      fetchStations(applyedFilters);
+    } else if (initialStations.length > 0) {
+      resetStations(initialStations);
     }
-  }, [applyedFilters, initialStations]);
-
-  const totalStations = stations.length;
-
-  const currentStation = stations[currentStationIndex];
+  }, [applyedFilters, initialStations, fetchStations, resetStations]);
 
   const handlePlay = async () => {
     if (!audioElement) return;
@@ -92,69 +66,48 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
     }
   };
 
-  const loadMoreStations = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
-
-    setIsLoadingMore(true);
-    try {
-      const newStations = await fetchStations(
-        offsetRef.current,
-        applyedFilters.length > 0 ? applyedFilters : undefined
-      );
-      if (newStations.length > 0) {
-        setStations((prev) => [...prev, ...newStations]);
-        offsetRef.current += STATIONS_PER_PAGE;
-      }
-      if (newStations.length < STATIONS_PER_PAGE) {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error('Error loading more stations:', error);
-      toast.error('Не вдалося завантажити більше станцій');
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [isLoadingMore, hasMore, applyedFilters]);
-
   const handleNextStation = useCallback(() => {
-    const nextIndex = currentStationIndex + 1;
-
-    if (nextIndex >= totalStations - 3 && !isLoadingMore && hasMore) {
-      loadMoreStations();
+    nextStation();
+    if (applyedFilters.length > 0) {
+      loadMoreStations(applyedFilters);
     }
+  }, [nextStation, loadMoreStations, applyedFilters]);
 
-    if (nextIndex >= totalStations) {
-      if (!isLoadingMore && hasMore) {
-        loadMoreStations();
-      }
-      return;
-    }
+  const hanldePrevStation = useCallback(() => {
+    prevStation();
+  }, [prevStation]);
 
-    setCurrentStationIndex(nextIndex);
-  }, [
-    currentStationIndex,
-    totalStations,
-    isLoadingMore,
-    hasMore,
-    loadMoreStations,
-  ]);
-
-  const hanldePrevStation = () => {
-    if (currentStationIndex === 0) {
-      return;
-    }
-    setCurrentStationIndex((prev) => prev - 1);
-  };
-
-  const handleError = () => {
+  const handleError = useCallback(() => {
     setIsPlaying(false);
     setIsLoading(false);
-    console.log(
-      `${currentStation?.name || 'Станція'} недоступна, перемикаю...`
-    );
+    const station = currentStation();
+    console.log(`${station?.name || 'Станція'} недоступна, перемикаю...`);
     setTimeout(() => handleNextStation(), 500);
-  };
+  }, [currentStation, handleNextStation, setIsPlaying]);
 
+  // Sync audio with isPlaying state from store
+  useEffect(() => {
+    if (!audioElement) return;
+
+    const syncAudio = async () => {
+      if (isPlaying && audioElement.paused) {
+        try {
+          await audioElement.play();
+        } catch (error) {
+          if (error instanceof Error && error.name !== 'AbortError') {
+            console.error('Error playing audio:', error);
+            setIsPlaying(false);
+          }
+        }
+      } else if (!isPlaying && !audioElement.paused) {
+        audioElement.pause();
+      }
+    };
+
+    syncAudio();
+  }, [isPlaying, audioElement, setIsPlaying]);
+
+  // Load new station when currentStationIndex changes
   useEffect(() => {
     if (!audioElement) return;
 
@@ -186,15 +139,16 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
       cancelled = true;
       audioElement.removeEventListener('canplay', handleCanPlay);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStationIndex, audioElement, stations]);
+  }, [currentStationIndex, audioElement, stations, isPlaying, setIsPlaying]);
+
+  const station = currentStation();
 
   return {
     audioRef,
     audioElement,
     stationState: {
-      currentStation,
-      totalStations,
+      currentStation: station,
+      totalStations: totalStations(),
       currentStationIndex,
     },
     playingState: {

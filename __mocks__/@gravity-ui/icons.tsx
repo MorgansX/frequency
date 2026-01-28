@@ -27,3 +27,11 @@ export const Funnel = (props: Record<string, unknown>) => (
 export const Xmark = (props: Record<string, unknown>) => (
   <svg data-testid="xmark" {...props} />
 );
+
+export const ListUl = (props: Record<string, unknown>) => (
+  <svg data-testid="list-ul" {...props} />
+);
+
+export const TrashBin = (props: Record<string, unknown>) => (
+  <svg data-testid="trash-bin" {...props} />
+);
