@@ -1,6 +1,21 @@
 import { render, screen } from '@testing-library/react';
 import { AudioPlayer } from '@/components/Player';
 
+// Mock HTMLAudioElement
+window.HTMLMediaElement.prototype.load = jest.fn();
+window.HTMLMediaElement.prototype.play = jest.fn().mockResolvedValue(undefined);
+window.HTMLMediaElement.prototype.pause = jest.fn();
+
+jest.mock('@/store/useCounrty', () => ({
+  useCountry: () => ({
+    country: 'Ukraine',
+    tags: [],
+    setCountry: jest.fn(),
+    setTags: jest.fn(),
+  }),
+  DEFAULT_COUNTRY: 'Ukraine',
+}));
+
 const mockStations = [
   {
     stationuuid: '1',

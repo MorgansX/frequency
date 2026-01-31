@@ -1,9 +1,9 @@
 import { useRadioStations } from '../useRadioStations';
 import { act } from '@testing-library/react';
-import { radioBrowserApi } from '@/lib/types/api/radio-browser';
+import { radioBrowserApi } from '@/lib/api/radio-browser';
 import { Station } from '@/lib/types/radio.types';
 
-jest.mock('@/lib/types/api/radio-browser');
+jest.mock('@/lib/api/radio-browser');
 
 const mockRadioBrowserApi = radioBrowserApi as jest.Mocked<
   typeof radioBrowserApi
@@ -201,6 +201,7 @@ describe('useRadioStations', () => {
 
   describe('nextStation', () => {
     const mockStations = createMockStations(5);
+    const testCountry = 'Ukraine';
 
     beforeEach(() => {
       act(() => {
@@ -216,7 +217,7 @@ describe('useRadioStations', () => {
       const { nextStation } = useRadioStations.getState();
 
       act(() => {
-        nextStation();
+        nextStation(testCountry);
       });
 
       expect(useRadioStations.getState().currentStationIndex).toBe(1);
@@ -230,7 +231,7 @@ describe('useRadioStations', () => {
       const { nextStation } = useRadioStations.getState();
 
       act(() => {
-        nextStation();
+        nextStation(testCountry);
       });
 
       expect(useRadioStations.getState().currentStationIndex).toBe(4);
@@ -251,7 +252,7 @@ describe('useRadioStations', () => {
       const { nextStation } = useRadioStations.getState();
 
       act(() => {
-        nextStation();
+        nextStation(testCountry);
       });
 
       expect(mockRadioBrowserApi.searchStations).toHaveBeenCalled();
@@ -296,6 +297,8 @@ describe('useRadioStations', () => {
   });
 
   describe('loadMoreStations', () => {
+    const testCountry = 'Ukraine';
+
     it('should load more stations and append to list', async () => {
       const existingStations = createMockStations(5);
       const newStations = createMockStations(5).map((s, i) => ({
@@ -317,7 +320,7 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations();
+        await loadMoreStations(testCountry);
       });
 
       const state = useRadioStations.getState();
@@ -333,7 +336,7 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations();
+        await loadMoreStations(testCountry);
       });
 
       expect(mockRadioBrowserApi.searchStations).not.toHaveBeenCalled();
@@ -347,7 +350,7 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations();
+        await loadMoreStations(testCountry);
       });
 
       expect(mockRadioBrowserApi.searchStations).not.toHaveBeenCalled();
@@ -369,7 +372,7 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations();
+        await loadMoreStations(testCountry);
       });
 
       expect(useRadioStations.getState().hasMore).toBe(false);
@@ -391,13 +394,13 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations(['rock', 'pop']);
+        await loadMoreStations(testCountry, ['rock', 'pop']);
       });
 
       expect(mockRadioBrowserApi.searchStationsByTags).toHaveBeenCalledWith(
         ['rock', 'pop'],
         expect.objectContaining({
-          country: 'Ukraine',
+          country: testCountry,
           order: 'votes',
         })
       );
@@ -422,7 +425,7 @@ describe('useRadioStations', () => {
       const { loadMoreStations } = useRadioStations.getState();
 
       await act(async () => {
-        await loadMoreStations();
+        await loadMoreStations(testCountry);
       });
 
       const state = useRadioStations.getState();
@@ -435,6 +438,8 @@ describe('useRadioStations', () => {
   });
 
   describe('fetchStations', () => {
+    const testCountry = 'Ukraine';
+
     it('should fetch and set stations', async () => {
       const mockStations = createMockStations(20);
       mockRadioBrowserApi.searchStations.mockResolvedValue(mockStations);
@@ -442,7 +447,7 @@ describe('useRadioStations', () => {
       const { fetchStations } = useRadioStations.getState();
 
       await act(async () => {
-        await fetchStations();
+        await fetchStations(testCountry);
       });
 
       const state = useRadioStations.getState();
@@ -459,7 +464,7 @@ describe('useRadioStations', () => {
       const { fetchStations } = useRadioStations.getState();
 
       await act(async () => {
-        await fetchStations();
+        await fetchStations(testCountry);
       });
 
       expect(useRadioStations.getState().hasMore).toBe(false);
@@ -476,7 +481,7 @@ describe('useRadioStations', () => {
 
       let fetchPromise: Promise<void>;
       await act(async () => {
-        fetchPromise = fetchStations();
+        fetchPromise = fetchStations(testCountry);
       });
 
       expect(useRadioStations.getState().isLoadingStations).toBe(true);
@@ -497,13 +502,13 @@ describe('useRadioStations', () => {
       const { fetchStations } = useRadioStations.getState();
 
       await act(async () => {
-        await fetchStations(['jazz']);
+        await fetchStations(testCountry, ['jazz']);
       });
 
       expect(mockRadioBrowserApi.searchStationsByTags).toHaveBeenCalledWith(
         ['jazz'],
         expect.objectContaining({
-          country: 'Ukraine',
+          country: testCountry,
         })
       );
     });

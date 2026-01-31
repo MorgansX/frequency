@@ -15,11 +15,16 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@heroui/modal": "^2.2.26",
+    "@heroui/autocomplete": "^2.3.32",
+    "@heroui/modal": "^2.2.27",
+    "@heroui/progress": "^2.2.24",
     "@heroui/react": "^3.0.0-beta.5",
+    "@heroui/select": "^2.4.31",
     "@heroui/styles": "^3.0.0-beta.5",
-    "@heroui/system": "^2.4.25",
+    "@heroui/system": "^2.4.26",
+    "@heroui/theme": "^2.4.24",
     "@tailwindcss/postcss": "^4.1.18",
+    "framer-motion": "^11.5.6",
     "next": "16.1.4",
     "postcss": "^8.5.6",
     "react": "19.2.3",
@@ -30,6 +35,7 @@
   },
   "devDependencies": {
     "@gravity-ui/icons": "^2.16.0",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

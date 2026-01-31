@@ -1,10 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useRadioFilter } from '@/store/useRadioFilter';
 import { useRadioStations } from '@/store/useRadioStations';
 import { IPlayer } from './types';
+import { useCountry } from '@/store/useCounrty';
 
 export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
+  const { country } = useCountry();
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
   );
@@ -13,6 +15,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(false);
+  const prevFiltersLength = useRef(0);
 
   const { applyedFilters } = useRadioFilter();
 
@@ -38,13 +41,20 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   }, [initialStations, stations.length, resetStations]);
 
   // Fetch stations when filters change
+  const initialStationsRef = useRef(initialStations);
+  initialStationsRef.current = initialStations;
+
   useEffect(() => {
-    if (applyedFilters.length) {
-      fetchStations(applyedFilters);
-    } else if (initialStations.length > 0) {
-      resetStations(initialStations);
+    const hadFilters = prevFiltersLength.current > 0;
+    const hasFilters = applyedFilters.length > 0;
+    prevFiltersLength.current = applyedFilters.length;
+
+    if (hasFilters) {
+      fetchStations(country, applyedFilters);
+    } else if (hadFilters && initialStationsRef.current.length > 0) {
+      resetStations(initialStationsRef.current);
     }
-  }, [applyedFilters, initialStations, fetchStations, resetStations]);
+  }, [applyedFilters, country, fetchStations, resetStations]);
 
   const handlePlay = async () => {
     if (!audioElement) return;
@@ -67,11 +77,11 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
   };
 
   const handleNextStation = useCallback(() => {
-    nextStation();
+    nextStation(country);
     if (applyedFilters.length > 0) {
-      loadMoreStations(applyedFilters);
+      loadMoreStations(country, applyedFilters);
     }
-  }, [nextStation, loadMoreStations, applyedFilters]);
+  }, [country, applyedFilters]);
 
   const hanldePrevStation = useCallback(() => {
     prevStation();
@@ -105,7 +115,7 @@ export const useRadioPlayer = ({ stations: initialStations }: IPlayer) => {
     };
 
     syncAudio();
-  }, [isPlaying, audioElement, setIsPlaying]);
+  }, [isPlaying, audioElement]);
 
   // Load new station when currentStationIndex changes
   useEffect(() => {

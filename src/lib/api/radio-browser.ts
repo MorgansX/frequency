@@ -1,5 +1,5 @@
 import { SearchParams } from 'next/dist/server/request/search-params';
-import { Station } from '../radio.types';
+import { Station, Country } from '../types/radio.types';
 
 const BASE_URL = 'https://de1.api.radio-browser.info';
 
@@ -75,7 +75,7 @@ export const radioBrowserApi = {
     });
   },
 
-  getCountries: async () => {
+  getCountries: async (): Promise<Country[]> => {
     const response = await fetch(`${BASE_URL}/json/countries`);
     return response.json();
   },

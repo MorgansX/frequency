@@ -15,9 +15,13 @@ import { CategoriesButtons } from './CategoriesButtons';
 import { CategoriesFooter } from './CategoriesFooter';
 import { useCategoriesFilter } from './useCtagoriesFilter';
 import { AppModalHeader } from '../Modal/ModalHeader';
+import { useCountry } from '@/store/useCounrty';
 
 export const CategoryFilters = ({ categories }: { categories: string[] }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { tags } = useCountry();
+
+  const filterValues = tags.length ? tags : categories;
 
   const {
     selectedCategories,
@@ -66,7 +70,7 @@ export const CategoryFilters = ({ categories }: { categories: string[] }) => {
               </AppModalHeader>
               <ModalBody>
                 <CategoriesButtons
-                  categories={categories}
+                  categories={filterValues}
                   selectedCategories={selectedCategories}
                   toggleCategory={toggleCategory}
                 />
