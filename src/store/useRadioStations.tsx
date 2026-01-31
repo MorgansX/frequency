@@ -1,5 +1,5 @@
 import { Station } from '@/lib/types/radio.types';
-import { radioBrowserApi } from '@/lib/types/api/radio-browser';
+import { radioBrowserApi } from '@/lib/api/radio-browser';
 import { create } from 'zustand';
 
 const STATIONS_PER_PAGE = 20;
