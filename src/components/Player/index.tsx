@@ -24,7 +24,7 @@ export const AudioPlayer = ({ stations }: IPlayer) => {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 border border-zinc-700 mb-2">
+    <Card className="w-full max-w-md shadow-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 border border-zinc-700">
       <CardHeader className="flex gap-4 pb-0 items-center">
         <PlayerStationInfo
           currentStation={currentStation}

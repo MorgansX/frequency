@@ -31,3 +31,14 @@ export interface SearchParams {
   order?: 'name' | 'votes' | 'clickcount' | 'bitrate';
   reverse?: boolean;
 }
+
+export interface Country {
+  iso_3166_1: string;
+  name: string;
+  stationcount: string;
+}
+
+export interface MappedCountry {
+  code: string;
+  name: string;
+}
