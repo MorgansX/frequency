@@ -4,16 +4,17 @@ import { StationsList } from '@/components/StationsList';
 import { SelectCountries } from '@/components/SelectCountries';
 import { radioBrowserApi } from '@/lib/api/radio-browser';
 import { countriesMapper } from '@/lib/helpers/countriesDataMapper';
+import { DEFAULT_COUNTRY } from '@/store/useCounrty';
 
 export default async function Home() {
   const [stations, categories, countries] = await Promise.all([
     radioBrowserApi.searchStations({
-      country: 'Ukraine',
+      country: DEFAULT_COUNTRY,
       order: 'votes',
       reverse: 'true',
       limit: '20',
     }),
-    radioBrowserApi.getTagsByCountry('Ukraine'),
+    radioBrowserApi.getTagsByCountry(DEFAULT_COUNTRY),
     radioBrowserApi.getCountries(),
   ]);
 
