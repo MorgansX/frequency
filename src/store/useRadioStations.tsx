@@ -1,5 +1,5 @@
 import { Station } from '@/lib/types/radio.types';
-import { radioBrowserApi } from '@/lib/types/api/radio-browser';
+import { radioBrowserApi } from '@/lib/api/radio-browser';
 import { create } from 'zustand';
 
 const STATIONS_PER_PAGE = 20;
@@ -14,16 +14,21 @@ type State = {
   offset: number;
 };
 
+type FetchStations = (
+  country: string,
+  tags?: string[]
+) => Promise<void | Station[]>;
+
 type Actions = {
   setStations: (stations: Station[]) => void;
   setCurrentStationIndex: (index: number) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   togglePlayPause: () => void;
-  nextStation: () => void;
+  nextStation: (country: string) => void;
   prevStation: () => void;
   playStation: (station: Station) => void;
-  loadMoreStations: (tags?: string[]) => Promise<void>;
-  fetchStations: (tags?: string[]) => Promise<void>;
+  loadMoreStations: FetchStations;
+  fetchStations: FetchStations;
   resetStations: (initialStations: Station[]) => void;
 };
 
@@ -34,10 +39,11 @@ type Getters = {
 
 const fetchStationsFromApi = (
   offset: number,
+  country: string,
   tags?: string[]
 ): Promise<Station[]> => {
   const baseParams = {
-    country: 'Ukraine',
+    country,
     order: 'votes',
     reverse: 'true',
     limit: String(STATIONS_PER_PAGE),
@@ -92,7 +98,7 @@ export const useRadioStations = create<State & Actions & Getters>(
       }
     },
 
-    nextStation: () => {
+    nextStation: (country: string) => {
       const {
         currentStationIndex,
         stations,
@@ -103,12 +109,12 @@ export const useRadioStations = create<State & Actions & Getters>(
       const nextIndex = currentStationIndex + 1;
 
       if (nextIndex >= stations.length - 3 && !isLoadingMore && hasMore) {
-        loadMoreStations();
+        loadMoreStations(country);
       }
 
       if (nextIndex >= stations.length) {
         if (!isLoadingMore && hasMore) {
-          loadMoreStations();
+          loadMoreStations(country);
         }
         return;
       }
@@ -122,20 +128,28 @@ export const useRadioStations = create<State & Actions & Getters>(
       set({ currentStationIndex: currentStationIndex - 1 });
     },
 
-    loadMoreStations: async (tags?: string[]) => {
+    loadMoreStations: async (country: string, tags?: string[]) => {
       const { isLoadingMore, hasMore, offset } = get();
       if (isLoadingMore || !hasMore) return;
 
       set({ isLoadingMore: true });
 
       try {
-        const newStations = await fetchStationsFromApi(offset, tags);
+        const newStations = await fetchStationsFromApi(offset, country, tags);
 
         if (newStations.length > 0) {
-          set((state) => ({
-            stations: [...state.stations, ...newStations],
-            offset: state.offset + STATIONS_PER_PAGE,
-          }));
+          set((state) => {
+            const existingIds = new Set(
+              state.stations.map((s) => s.stationuuid)
+            );
+            const uniqueNewStations = newStations.filter(
+              (s) => !existingIds.has(s.stationuuid)
+            );
+            return {
+              stations: [...state.stations, ...uniqueNewStations],
+              offset: state.offset + STATIONS_PER_PAGE,
+            };
+          });
         }
 
         if (newStations.length < STATIONS_PER_PAGE) {
@@ -148,11 +162,11 @@ export const useRadioStations = create<State & Actions & Getters>(
       }
     },
 
-    fetchStations: async (tags?: string[]) => {
+    fetchStations: async (country: string, tags?: string[]) => {
       set({ isLoadingStations: true });
 
       try {
-        const newStations = await fetchStationsFromApi(0, tags);
+        const newStations = await fetchStationsFromApi(0, country, tags);
         set({
           stations: newStations,
           currentStationIndex: 0,

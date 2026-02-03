@@ -8,9 +8,11 @@ import { AppModalHeader } from '../Modal/ModalHeader';
 import { StationCard } from '../StationCard';
 import { useRadioStations } from '@/store/useRadioStations';
 import { useRadioFilter } from '@/store/useRadioFilter';
+import { useCountry } from '@/store/useCounrty';
 
 export const StationsList = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { country } = useCountry();
   const {
     stations,
     playStation,
@@ -26,9 +28,12 @@ export const StationsList = () => {
 
   const handleLoadMore = useCallback(() => {
     if (!isLoadingMore && hasMore) {
-      loadMoreStations(applyedFilters.length > 0 ? applyedFilters : undefined);
+      loadMoreStations(
+        country,
+        applyedFilters.length > 0 ? applyedFilters : undefined
+      );
     }
-  }, [isLoadingMore, hasMore, loadMoreStations, applyedFilters]);
+  }, [isLoadingMore, hasMore, country, applyedFilters, loadMoreStations]);
 
   useEffect(() => {
     const loader = loaderRef.current;

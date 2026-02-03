@@ -2,10 +2,12 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { StationsList } from '../index';
 import { useRadioStations } from '@/store/useRadioStations';
 import { useRadioFilter } from '@/store/useRadioFilter';
+import { useCountry } from '@/store/useCounrty';
 import { Station } from '@/lib/types/radio.types';
 
 jest.mock('@/store/useRadioStations');
 jest.mock('@/store/useRadioFilter');
+jest.mock('@/store/useCounrty');
 
 const mockOnClose = jest.fn();
 let mockIsOpen = false;
@@ -67,6 +69,7 @@ const mockUseRadioStations = useRadioStations as jest.MockedFunction<
 const mockUseRadioFilter = useRadioFilter as jest.MockedFunction<
   typeof useRadioFilter
 >;
+const mockUseCountry = useCountry as jest.MockedFunction<typeof useCountry>;
 
 const createMockStation = (overrides: Partial<Station> = {}): Station => ({
   stationuuid: `station-${Math.random()}`,
@@ -122,6 +125,12 @@ describe('StationsList', () => {
     mockUseRadioFilter.mockReturnValue(
       defaultFilterState as ReturnType<typeof useRadioFilter>
     );
+    mockUseCountry.mockReturnValue({
+      country: 'Ukraine',
+      tags: [],
+      setCountry: jest.fn(),
+      setTags: jest.fn(),
+    });
 
     window.IntersectionObserver = jest.fn((callback) => {
       mockIntersectionCallback = callback;
@@ -289,7 +298,10 @@ describe('StationsList', () => {
         );
       });
 
-      expect(mockLoadMoreStations).toHaveBeenCalledWith(['rock', 'pop']);
+      expect(mockLoadMoreStations).toHaveBeenCalledWith('Ukraine', [
+        'rock',
+        'pop',
+      ]);
     });
 
     it('should pass undefined when no filters applied', () => {
@@ -306,7 +318,7 @@ describe('StationsList', () => {
         );
       });
 
-      expect(mockLoadMoreStations).toHaveBeenCalledWith(undefined);
+      expect(mockLoadMoreStations).toHaveBeenCalledWith('Ukraine', undefined);
     });
   });
 
